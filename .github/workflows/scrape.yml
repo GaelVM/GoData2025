@@ -20,8 +20,11 @@ jobs:
       with:
         node-version: '18'
 
-    - name: 📦 Install dependencies
+    - name: 📦 Install dependencies (includes Puppeteer + Chrome)
       run: npm install
+
+    - name: 🧠 Install Puppeteer browser (required for puppeteer-core)
+      run: npx puppeteer browsers install chrome
 
     - name: 🧠 Run scraper
       run: node scrape.js
