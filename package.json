@@ -5,6 +5,5 @@
     "scrape": "node scrape.js"
   },
   "dependencies": {
-    "puppeteer": "^21.3.8" // o la última versión
-  }
+    "puppeteer": "^21.3.8" 
 }
