@@ -1,0 +1,52 @@
+name: Update Data
+
+on:
+  push:
+    branches:
+      - main
+  schedule:
+    - cron: '*/10 * * * *'  # Ejecutar cada 10 minutos
+
+jobs:
+  scrape-data:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: 📥 Checkout repository
+      uses: actions/checkout@v2
+
+    - name: 🟢 Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+
+    - name: 📦 Install dependencies
+      run: npm install
+
+    - name: 🧠 Run scraper
+      run: node scrape.js
+
+    - name: 📁 Move result files to root
+      run: |
+        mv temp/noticias.json .
+
+    - name: ✏️ Append blank line (opcional)
+      run: echo "" >> noticias.json
+
+    - name: 💾 Commit changes
+      run: |
+        git config --local user.email "github-actions[bot]@users.noreply.github.com"
+        git config --local user.name "github-actions[bot]"
+        git switch --orphan data
+        git add noticias.json
+        git commit -m "📰 Noticias actualizadas"
+
+    - name: 🧹 Clean temp folder
+      run: rm -rf temp
+
+    - name: 🚀 Push to `data` branch
+      uses: ad-m/github-push-action@v0.6.0
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        branch: data
+        force: true
