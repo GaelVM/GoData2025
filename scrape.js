@@ -1,10 +1,8 @@
 const fs = require('fs');
-const noticias = require('./pages/noticias'); // <- Agregado
+const noticias = require('./pages/noticias');
 
 async function main() {
-    if (!fs.existsSync('files')) fs.mkdirSync('files');
-
-    await noticias.get(); // <- Ejecutar scraper de noticias
+  await noticias.get();
 }
 
 main();
