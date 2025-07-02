@@ -1,9 +1,8 @@
-const fs = require('fs');
-const noticias = require('./pages/noticias');
+import { getNoticias } from './pages/noticias.js';
 
 async function main() {
-  if (!fs.existsSync('temp')) fs.mkdirSync('temp');
-  await noticias.get();
+  console.log("⏳ Cargando página de noticias...");
+  await getNoticias();
 }
 
 main();

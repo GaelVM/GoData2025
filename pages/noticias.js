@@ -1,49 +1,34 @@
-const fs = require('fs');
-const path = require('path');
-const puppeteer = require('puppeteer');
+import fetch from 'node-fetch';
+import fs from 'fs';
+import path from 'path';
 
-async function get() {
-    console.log("⏳ Cargando página de noticias...");
+export async function getNoticias() {
+  console.log("🌐 Conectando a la API de noticias...");
 
-    const browser = await puppeteer.launch({
-        headless: "new",
-        args: ['--no-sandbox', '--disable-setuid-sandbox']
-    });
+  const url = 'https://pokemongolive.com/_next/data/<REEMPLAZA_ESTO>.json/news?hl=es';
 
-    const page = await browser.newPage();
+  try {
+    const res = await fetch(url);
+    const json = await res.json();
 
-    await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115 Safari/537.36');
+    const posts = json.pageProps?.posts || [];
+    const noticias = posts.map(post => ({
+      title: post.title,
+      image: post.hero?.url,
+      link: `https://pokemongolive.com${post.url}`,
+      date: post.date
+    }));
 
-    await page.goto("https://pokemongolive.com/news/?hl=es", { waitUntil: "domcontentloaded" });
+    const outputDir = path.resolve('temp');
+    if (!fs.existsSync(outputDir)) {
+      fs.mkdirSync(outputDir);
+    }
 
-    console.log("⌛ Esperando selector .blogList__post...");
-    await page.waitForSelector(".blogList__post", { timeout: 30000 });
+    const filePath = path.join(outputDir, 'noticias.json');
+    fs.writeFileSync(filePath, JSON.stringify(noticias, null, 2), 'utf-8');
 
-    const noticias = await page.evaluate(() => {
-        const posts = Array.from(document.querySelectorAll(".blogList__post"));
-        return posts.map(post => {
-            const href = post.getAttribute("href");
-            const image = post.querySelector("img")?.src || "";
-            const date = post.querySelector(".blogList__post__content__date")?.textContent.trim() || "";
-            const title = post.querySelector(".blogList__post__content__title")?.textContent.trim() || "";
-
-            return {
-                URL: `https://pokemongolive.com${href}`,
-                Image: image,
-                Date: date,
-                Title: title
-            };
-        }).filter(item => item.URL && item.Title);
-    });
-
-    await browser.close();
-
-    const dir = path.join(__dirname, '..', 'temp');
-    if (!fs.existsSync(dir)) fs.mkdirSync(dir);
-
-    fs.writeFileSync(path.join(dir, 'noticias.json'), JSON.stringify(noticias, null, 2), 'utf-8');
-
-    console.log(`✅ Noticias guardadas (${noticias.length}) en temp/noticias.json`);
+    console.log(`✅ Noticias guardadas (${noticias.length}) en ${filePath}`);
+  } catch (err) {
+    console.error("❌ Error al obtener noticias:", err.message);
+  }
 }
-
-module.exports = { get };

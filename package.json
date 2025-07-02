@@ -1,12 +1,14 @@
 {
-  "name": "godata2025",
+ "name": "godata2025",
   "version": "1.0.0",
+  "type": "module",
   "description": "Scraper de noticias Pokémon GO",
   "main": "scrape.js",
   "scripts": {
     "scrape": "node scrape.js"
   },
   "dependencies": {
+    "node-fetch": "^3.3.2",
     "puppeteer": "^21.3.8"
   }
 }
