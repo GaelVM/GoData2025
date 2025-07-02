@@ -1,55 +1,55 @@
-name: Update Data
+# name: Update Data
 
-on:
-  push:
-    branches:
-      - main
-  schedule:
-    - cron: '*/10 * * * *'  # Ejecutar cada 10 minutos
+# on:
+#   push:
+#     branches:
+#       - main
+#   schedule:
+#     - cron: '*/10 * * * *'  # Ejecutar cada 10 minutos
 
-jobs:
-  scrape-data:
-    runs-on: ubuntu-latest
+# jobs:
+#   scrape-data:
+#     runs-on: ubuntu-latest
 
-    steps:
-    - name: 📥 Checkout repository
-      uses: actions/checkout@v2
+#     steps:
+#     - name: 📥 Checkout repository
+#       uses: actions/checkout@v2
 
-    - name: 🟢 Set up Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: '18'
+#     - name: 🟢 Set up Node.js
+#       uses: actions/setup-node@v3
+#       with:
+#         node-version: '18'
 
-    - name: 📦 Install dependencies (includes Puppeteer + Chrome)
-      run: npm install
+#     - name: 📦 Install dependencies (includes Puppeteer + Chrome)
+#       run: npm install
 
-    - name: 🧠 Install Puppeteer browser (required for puppeteer-core)
-      run: npx puppeteer browsers install chrome
+#     - name: 🧠 Install Puppeteer browser (required for puppeteer-core)
+#       run: npx puppeteer browsers install chrome
 
-    - name: 🧠 Run scraper
-      run: node scrape.js
+#     - name: 🧠 Run scraper
+#       run: node scrape.js
 
-    - name: 📁 Move result files to root
-      run: |
-        mv temp/noticias.json .
+#     - name: 📁 Move result files to root
+#       run: |
+#         mv temp/noticias.json .
 
-    - name: ✏️ Append blank line (opcional)
-      run: echo "" >> noticias.json
+#     - name: ✏️ Append blank line (opcional)
+#       run: echo "" >> noticias.json
 
-    - name: 💾 Commit changes
-      run: |
-        git config --local user.email "github-actions[bot]@users.noreply.github.com"
-        git config --local user.name "github-actions[bot]"
-        git switch --orphan data
-        git add noticias.json
-        git commit -m "📰 Noticias actualizadas"
+#     - name: 💾 Commit changes
+#       run: |
+#         git config --local user.email "github-actions[bot]@users.noreply.github.com"
+#         git config --local user.name "github-actions[bot]"
+#         git switch --orphan data
+#         git add noticias.json
+#         git commit -m "📰 Noticias actualizadas"
 
-    - name: 🧹 Clean temp folder
-      run: rm -rf temp
+#     - name: 🧹 Clean temp folder
+#       run: rm -rf temp
 
-    - name: 🚀 Push to `data` branch
-      uses: ad-m/github-push-action@v0.6.0
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        branch: data
-        force: true
+#     - name: 🚀 Push to `data` branch
+#       uses: ad-m/github-push-action@v0.6.0
+#       with:
+#         github_token: ${{ secrets.GITHUB_TOKEN }}
+#         branch: data
+#         force: true
